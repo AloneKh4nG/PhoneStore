@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import Connection.MyConnection;
+import DTO.CT_SanPham;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -98,6 +99,24 @@ public class SanPhamBUS {
         return -1;
     }
     
+    public SanPham getSanPhamByIndex (int Index){
+        return list.get(Index);
+    }
+    
+    public int getSoLuongKCbyID(String maSP){
+        for (SanPham sp : list){
+            if(maSP.equals(sp.getMaSP())){
+                return sp.getSLKhachChon();
+            }
+        }
+        return -1;    
+    }
+    
+    public void setSLSanPhamKC (int index, int SL){ // Truyền vào vị trí trong list
+        SanPham sp = this.getSanPhamByIndex(index); // tìm sản phẩm trong list ở vị trí index
+        sp.setSLKhachChon(SL);
+    }
+    
     public SanPham getSanPhamByID(String maSP){
         for (SanPham sp : list){
             if(maSP.equals(sp.getMaSP())){
@@ -106,50 +125,15 @@ public class SanPhamBUS {
         }
         return null;
     }
-    
-    public ArrayList<SanPham> getListSanPhamByName(String searchKeyword){
-        searchKeyword = searchKeyword.toLowerCase();
-        ArrayList<SanPham> kq = new ArrayList<>();
-        for(SanPham sp : list){
-            String name = sp.getTenSP().toLowerCase();
-            if(name.contains(searchKeyword)){
-                kq.add(sp);
-            }
+    public int TongTien(ArrayList<CT_SanPham> listCT){
+        int sum = 0;
+        for (CT_SanPham ctsp : listCT){
+            String maSP = ctsp.getMaSP();
+            SanPham sp = getSanPhamByID(maSP);
+            int donGia = sp.getDonGia();
+            int SL = sp.getSLKhachChon();
+            
+            sum += donGia*SL;
         }
-        if(kq.isEmpty()){
-            return null;
-        } else return kq;
-    }
-    
-    //Hàm trả về list được sắp xếp từ A-Z
-    public ArrayList<SanPham> sortList_A_to_Z(){
-        Collections.sort(list, new StringFirstLetterAscendingComparator());
-        return list;
-    }
-    
-    //Hàm trả về list được sắp xếp từ Z-A
-    public ArrayList<SanPham> sortList_Z_to_A(){
-        Collections.sort(list, new StringFirstLetterDescendingComparator());
-        return list;
-    }
-}
-
-//Hàm sắp xếp tên sản phẩm từ A-Z
-class StringFirstLetterAscendingComparator implements Comparator<SanPham> {
-    @Override
-    public int compare(SanPham o1, SanPham o2) {
-        char firstLetter1 = o1.getTenSP().charAt(0);
-        char firstLetter2 = o2.getTenSP().charAt(0);
-        return Character.compare(firstLetter1, firstLetter2);
-    }
-}
-
-//Hàm sắp xếp tên sản phẩm từ Z-A
-class StringFirstLetterDescendingComparator implements Comparator<SanPham> {
-    @Override
-    public int compare(SanPham o1, SanPham o2) {
-        char firstLetter1 = o1.getTenSP().charAt(0);
-        char firstLetter2 = o2.getTenSP().charAt(0);
-        return Character.compare(firstLetter2, firstLetter1);
-    }
+        return sum;
 }

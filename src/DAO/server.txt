@@ -1,5 +1,0 @@
-server=localhost
-database=PhoneStore
-username=sa
-password=123
-port=1433
